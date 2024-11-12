@@ -1,17 +1,7 @@
 import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-
-import PdfPrinter from 'pdfmake';
-import type { TDocumentDefinitions } from 'pdfmake/interfaces';
-
-const fonts = {
-  Roboto: {
-    normal: 'fonts/Roboto-Regular.ttf',
-    bold: 'fonts/Roboto-Bold.ttf',
-    italics: 'fonts/Roboto-Italic.ttf',
-    bolditalics: 'fonts/Roboto-BoldItalic.ttf',
-  },
-};
+import { PrinterService } from 'src/printer/printer.service';
+import { getHelloWorldReport, getEmploymentLetter } from 'src/reports';
 
 @Injectable()
 export class BasicReportsService extends PrismaClient implements OnModuleInit {
@@ -20,6 +10,10 @@ export class BasicReportsService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     await this.$connect();
     this.logger.log('Reports Database Connected');
+  }
+
+  constructor(private readonly printerService: PrinterService) {
+    super();
   }
 
   async findAll() {
@@ -31,14 +25,14 @@ export class BasicReportsService extends PrismaClient implements OnModuleInit {
   }
 
   hello() {
-    const printer = new PdfPrinter(fonts);
+    const docDefinition = getHelloWorldReport({ name: 'Christian Jiménez' });
+    const doc = this.printerService.createPDF(docDefinition);
+    return doc;
+  }
 
-    const docDefinition: TDocumentDefinitions = {
-      content: ['Hola Mundo'],
-    };
-
-    const doc = printer.createPdfKitDocument(docDefinition);
-
+  employmentLetter() {
+    const docDefinition = getEmploymentLetter();
+    const doc = this.printerService.createPDF(docDefinition);
     return doc;
   }
 }

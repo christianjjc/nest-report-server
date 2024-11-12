@@ -14,9 +14,17 @@ export class BasicReportsController {
   @Get()
   async hello(@Res() response: Response) {
     const pdfDoc = this.basicReportsService.hello();
-
     response.setHeader('Content-Type', 'application/pdf');
-    pdfDoc.info.Title = 'Constancia-de-Empleado.pdf';
+    pdfDoc.info.Title = 'Hello-World.pdf';
+    pdfDoc.pipe(response);
+    pdfDoc.end();
+  }
+
+  @Get('employment-letter')
+  async employmentLetter(@Res() response: Response) {
+    const pdfDoc = this.basicReportsService.employmentLetter();
+    response.setHeader('Content-Type', 'application/pdf');
+    pdfDoc.info.Title = 'Employment-Letter.pdf';
     pdfDoc.pipe(response);
     pdfDoc.end();
   }
