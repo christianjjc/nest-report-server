@@ -1,7 +1,20 @@
-import { BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
+import {
+  //
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrinterService } from 'src/printer/printer.service';
-import { getHelloWorldReport, getEmploymentLetter, getEmploymentLetterById } from 'src/reports';
+import {
+  //
+  getHelloWorldReport,
+  getEmploymentLetter,
+  getEmploymentLetterById,
+  countriesReport,
+} from 'src/reports';
 
 @Injectable()
 export class BasicReportsService extends PrismaClient implements OnModuleInit {
@@ -39,7 +52,6 @@ export class BasicReportsService extends PrismaClient implements OnModuleInit {
   async employmentLetterById(employeeId: number) {
     const employee = await this.employees.findFirst({ where: { id: employeeId } });
     if (!employee) throw new NotFoundException(`Employee with employeeId: ${employeeId} not found!`);
-    // console.log('employee', employee);
     const docDefinition = getEmploymentLetterById({
       employerName: 'Christian Jiménez Calvo',
       employerPosition: 'Gerente de RRHHR',
@@ -50,6 +62,12 @@ export class BasicReportsService extends PrismaClient implements OnModuleInit {
       employeeWorkSchedule: employee.work_schedule,
       employerCompany: 'CJDev SAC',
     });
+    const doc = this.printerService.createPDF(docDefinition);
+    return doc;
+  }
+
+  getCountriesReport() {
+    const docDefinition = countriesReport();
     const doc = this.printerService.createPDF(docDefinition);
     return doc;
   }
