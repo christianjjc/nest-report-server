@@ -1,34 +1,75 @@
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
-import { headerSection } from './sections';
+import { footerSection, headerSection } from './sections';
+import { countries as Country } from '@prisma/client';
 
-export const countriesReport = (): TDocumentDefinitions => {
+interface ReportOptionsI {
+  title?: string;
+  subTitle?: string;
+  countries: Country[];
+}
+
+export const countriesReport = (options: ReportOptionsI): TDocumentDefinitions => {
+  const { countries } = options;
+
   return {
     pageOrientation: 'landscape',
     header: headerSection({
       title: 'Countries Reports',
       subTitle: 'List of Countries',
     }),
+    footer: footerSection,
     pageMargins: [40, 110, 40, 60],
     content: [
       {
         layout: 'lightHorizontalLines', //noBorders - headerLineOnly - lightHorizontalLines
         table: {
-          // headers are automatically repeated if the table spans over multiple pages
-          // you can declare how many rows should be treated as headers
           headerRows: 1,
-          widths: ['*', 'auto', 100, '*'],
-
+          widths: [50, 50, 70, '*', 'auto', '*'],
           body: [
-            ['First', 'Second', 'Third', 'The last one'],
-            ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4'],
-            [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4'],
+            ['id', 'Iso2', 'Iso3', 'Name', 'Continent', 'LocalName'], //cabecera
+            ...countries.map((item) => [
+              { text: item.id.toString() },
+              { text: item.iso2 },
+              { text: item.iso3 },
+              { text: item.name, bold: true },
+              { text: item.continent },
+              { text: item.local_name },
+            ]),
+          ],
+        },
+      },
+      // tabla de totales
+      {
+        text: 'Totales',
+        style: {
+          fontSize: 18,
+          bold: true,
+        },
+        margin: [0, 40, 0, 0],
+      },
+      {
+        layout: 'noBorders',
+        table: {
+          headerRows: 1,
+          widths: [50, 50, 70, '*', 'auto', '*'],
+          body: [
+            [
+              {
+                //
+                text: 'Total de países',
+                colSpan: 2,
+                bold: true,
+              },
+              {},
+              {
+                //
+                text: `${countries.length.toString()} países.`,
+                bold: true,
+              },
+              {},
+              {},
+              {},
+            ], //cabecera
           ],
         },
       },

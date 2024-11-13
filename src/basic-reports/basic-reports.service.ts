@@ -6,7 +6,7 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, countries } from '@prisma/client';
 import { PrinterService } from 'src/printer/printer.service';
 import {
   //
@@ -66,8 +66,16 @@ export class BasicReportsService extends PrismaClient implements OnModuleInit {
     return doc;
   }
 
-  getCountriesReport() {
-    const docDefinition = countriesReport();
+  async getCountriesReport() {
+    const countries = await this.countries.findMany({
+      where: {
+        local_name: {
+          not: null,
+        },
+      },
+    });
+    if (!countries) throw new NotFoundException(`Countries not found!`);
+    const docDefinition = countriesReport({ countries });
     const doc = this.printerService.createPDF(docDefinition);
     return doc;
   }
