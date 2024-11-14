@@ -21,12 +21,21 @@ export const countriesReport = (options: ReportOptionsI): TDocumentDefinitions =
     pageMargins: [40, 110, 40, 60],
     content: [
       {
-        layout: 'lightHorizontalLines', //noBorders - headerLineOnly - lightHorizontalLines
+        // layout: 'lightHorizontalLines', //noBorders - headerLineOnly - lightHorizontalLines
+        layout: 'customLayout01',
         table: {
           headerRows: 1,
           widths: [50, 50, 70, '*', 'auto', '*'],
           body: [
-            ['id', 'Iso2', 'Iso3', 'Name', 'Continent', 'LocalName'], //cabecera
+            [
+              //
+              { text: 'id', color: '#fff', bold: true, margin: [5, 5] },
+              { text: 'Iso2', color: '#fff', bold: true, margin: [5, 5] },
+              { text: 'Iso3', color: '#fff', bold: true, margin: [5, 5] },
+              { text: 'Name', color: '#fff', bold: true, margin: [5, 5] },
+              { text: 'Continent', color: '#fff', bold: true, margin: [5, 5] },
+              { text: 'Local Name', color: '#fff', bold: true, margin: [5, 5] },
+            ], //cabecera
             ...countries.map((item) => [
               { text: item.id.toString() },
               { text: item.iso2 },
@@ -35,6 +44,20 @@ export const countriesReport = (options: ReportOptionsI): TDocumentDefinitions =
               { text: item.continent },
               { text: item.local_name },
             ]),
+            // ['', '', '', '', '', ``],
+            // ['', '', '', '', '', ``],
+            // ['', '', '', '', '', ``],
+            [
+              '',
+              '',
+              '',
+              '',
+              'Total',
+              {
+                text: `${countries.length} países`,
+                bold: true,
+              },
+            ],
           ],
         },
       },
