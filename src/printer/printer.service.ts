@@ -46,7 +46,11 @@ const customTableLayouts: Record<string, CustomTableLayout> = {
 export class PrinterService {
   private printer = new PdfPrinter(fonts);
 
-  createPDF(docDefinition: TDocumentDefinitions, options: BufferOptions = { tableLayouts: customTableLayouts }): PDFKit.PDFDocument {
+  createPDF(
+    //
+    docDefinition: TDocumentDefinitions,
+    options: BufferOptions = { tableLayouts: customTableLayouts },
+  ): PDFKit.PDFDocument {
     return this.printer.createPdfKitDocument(
       //
       docDefinition,

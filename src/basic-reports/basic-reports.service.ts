@@ -6,7 +6,7 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { PrismaClient, countries } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { PrinterService } from 'src/printer/printer.service';
 import {
   //
@@ -18,7 +18,7 @@ import {
 
 @Injectable()
 export class BasicReportsService extends PrismaClient implements OnModuleInit {
-  private readonly logger = new Logger('OrdersService');
+  private readonly logger = new Logger('BasicReportsService');
 
   async onModuleInit() {
     await this.$connect();
