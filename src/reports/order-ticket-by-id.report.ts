@@ -1,5 +1,7 @@
 import type { Content, StyleDictionary, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { footerSection } from './sections';
+import { CurrencyFormatter, DateFormatter, DecimalFormatter } from 'src/helpers';
+import { CompleteOrderI } from 'src/interfaces/order-details.interface';
 
 const logo: Content = {
   image: 'src/assets/tucan-banner.png',
@@ -21,7 +23,28 @@ const styles: StyleDictionary = {
   },
 };
 
-export const getOrderTicketById = () => {
+interface ReportValuesI {
+  title?: string;
+  subTitle?: string;
+  data: CompleteOrderI;
+}
+
+export const getOrderTicketById = (value: ReportValuesI): TDocumentDefinitions => {
+  const { data } = value;
+  // console.log(JSON.stringify(data, null, 2));
+  const { customers, order_details } = data;
+
+  const subTotal = order_details.reduce(
+    (acc, detail) =>
+      //
+      acc + detail.quantity * +detail.products.price,
+    0,
+  );
+
+  const iva_ = subTotal * 1.15 - subTotal;
+
+  const total = subTotal * 1.15;
+
   const docDefinition: TDocumentDefinitions = {
     styles: styles,
     header: logo,
@@ -46,8 +69,8 @@ export const getOrderTicketById = () => {
           {
             text: [
               //
-              { text: 'Recibo No#: 10255\n', bold: true },
-              `Fecha del recibo: 11 de julio de 2021\nPagar antes de: 18 de mayo de 2024`,
+              { text: `Recibo No#: ${data.order_id}\n`, bold: true },
+              `Fecha del recibo: ${DateFormatter.getDDMMMMYYYY(data.order_date)}\nPagar antes de: ${DateFormatter.getDDMMMMYYYY(new Date())}`,
             ],
             alignment: 'right',
             width: '50%',
@@ -68,7 +91,79 @@ export const getOrderTicketById = () => {
         text: [
           //
           { text: `Cobrar a:\n`, bold: true },
-          `Razón Social: Richter Supermarkt\nMichael Holz\nGrenzacherweg 237`,
+          `Razón Social: ${customers.customer_name}\n${customers.contact_name}\n${customers.address}\n${customers.city}, ${customers.country}`,
+        ],
+      },
+
+      //* Tabla con el detalle de la orden
+      {
+        layout: 'headerInLineOnly',
+        margin: [0, 20, 0, 0],
+        table: {
+          headerRows: 1,
+          widths: [20, '*', 'auto', 60, 60],
+          body: [
+            [
+              //cabecera
+              { text: 'Id', color: '#000', bold: true /* , margin: [5, 5]  */, alignment: 'center', margin: [0, 4] },
+              { text: 'Descripción', color: '#000', bold: true, alignment: 'center', margin: [0, 4] },
+              { text: 'Cantidad', color: '#000', bold: true, alignment: 'center', margin: [0, 4] },
+              { text: 'Precio', color: '#000', bold: true, alignment: 'center', margin: [0, 4] },
+              { text: 'Total', color: '#000', bold: true, alignment: 'center', margin: [0, 4] },
+            ],
+            // data
+            ...order_details.map((item) => [
+              { text: item.order_detail_id, alignment: 'center', fontSize: 11, margin: [0, 2] },
+              { text: item.products.product_name, alignment: 'left', fontSize: 11, margin: [0, 2] },
+              { text: DecimalFormatter.getDecimalFormat(item.quantity), alignment: 'right', fontSize: 11, margin: [0, 2] },
+              { text: CurrencyFormatter.getCurrencyFormat(+item.products.price), alignment: 'right', fontSize: 11, margin: [0, 2] },
+              {
+                text: CurrencyFormatter.getCurrencyFormat(+item.products.price * +item.quantity),
+                alignment: 'right',
+                fontSize: 11,
+                margin: [0, 2],
+              },
+            ]),
+          ],
+        },
+      },
+      '\n',
+      //* tabla Totales
+      {
+        columns: [
+          {
+            width: '*',
+            text: '',
+          },
+          {
+            width: 'auto',
+            layout: 'noBorders',
+            table: {
+              body: [
+                [
+                  { text: 'Subtotal:', bold: true },
+                  {
+                    text: CurrencyFormatter.getCurrencyFormat(subTotal),
+                    alignment: 'right',
+                  },
+                ],
+                [
+                  { text: 'IVA (15%):', bold: true },
+                  {
+                    text: CurrencyFormatter.getCurrencyFormat(iva_),
+                    alignment: 'right',
+                  },
+                ],
+                [
+                  { text: 'Total:', bold: true },
+                  {
+                    text: CurrencyFormatter.getCurrencyFormat(total),
+                    alignment: 'right',
+                  },
+                ],
+              ],
+            },
+          },
         ],
       },
     ],

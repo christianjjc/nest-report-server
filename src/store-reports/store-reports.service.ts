@@ -17,9 +17,23 @@ export class StoreReportsService extends PrismaClient implements OnModuleInit {
   }
 
   async getOrderByIdReport(orderId: number) {
-    const order = await this.orders.findFirst({ where: { order_id: orderId } });
+    const order = await this.orders.findUnique({
+      where: {
+        order_id: orderId,
+      },
+      include: {
+        customers: true,
+        order_details: {
+          include: {
+            products: true,
+          },
+        },
+      },
+    });
     if (!order) throw new NotFoundException(`Order with id: ${orderId} not found!`);
-    const docDefinition = getOrderTicketById();
+    //console.log(JSON.stringify(order, null, 2));
+    // const docDefinition = getOrderTicketById({ data: order as any });
+    const docDefinition = getOrderTicketById({ data: order });
     const doc = this.printerService.createPDF(docDefinition);
     return doc;
   }
