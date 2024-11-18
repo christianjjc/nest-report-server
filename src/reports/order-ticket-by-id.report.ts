@@ -1,4 +1,5 @@
 import type { Content, StyleDictionary, TDocumentDefinitions } from 'pdfmake/interfaces';
+import { footerSection } from './sections';
 
 const logo: Content = {
   image: 'src/assets/tucan-banner.png',
@@ -13,6 +14,11 @@ const styles: StyleDictionary = {
     bold: true,
     margin: [0, 30, 0, 0],
   },
+  subHeader: {
+    fontSize: 14,
+    bold: true,
+    margin: [0, 20, 0, 0],
+  },
 };
 
 export const getOrderTicketById = () => {
@@ -20,35 +26,51 @@ export const getOrderTicketById = () => {
     styles: styles,
     header: logo,
     pageMargins: [40, 60, 40, 60],
+    footer: footerSection,
     content: [
       //* Header
       {
         text: 'Tucan Code',
         style: 'header',
       },
+
       //* Address
       {
         columns: [
           //
           {
-            text: `15 Montgomery Str, Suite 100, \nOttawa ON K2Y 9X1, CANADA \nBN: 12783671823 \nhttps://cjjc.pe`,
+            text: `15 Montgomery Str, Suite 100,\nOttawa ON K2Y 9X1, CANADA\nBN: 12783671823\nhttps://cjjc.pe`,
             alignment: 'left',
             width: '50%',
           },
           {
-            text: `Recibo No#: 10255 \nFecha del recibo: 11 de julio de 2021 \nPagar antes de: 18 de mayo de 2024`,
+            text: [
+              //
+              { text: 'Recibo No#: 10255\n', bold: true },
+              `Fecha del recibo: 11 de julio de 2021\nPagar antes de: 18 de mayo de 2024`,
+            ],
             alignment: 'right',
             width: '50%',
           },
         ],
       },
+
       //* QR Code
       // basic usage
       // { qr: 'https://cjjc.pe' },
-      //* colored QR
+      // //* colored QR
       // { qr: 'text in QR', foreground: 'red', background: 'yellow' },
-      //* resized QR
+      // //* resized QR
       { qr: 'https://cjjc.pe', fit: 100, alignment: 'right' },
+
+      //* Dirección del cliente
+      {
+        text: [
+          //
+          { text: `Cobrar a:\n`, bold: true },
+          `Razón Social: Richter Supermarkt\nMichael Holz\nGrenzacherweg 237`,
+        ],
+      },
     ],
   };
   return docDefinition;
