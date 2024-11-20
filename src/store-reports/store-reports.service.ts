@@ -57,7 +57,7 @@ export class StoreReportsService extends PrismaClient implements OnModuleInit {
       take: 10,
     });
 
-    console.log('topCountries', topCountries);
+    // console.log('topCountries', topCountries);
 
     const topCountryData = topCountries.map(({ country, _count }) => ({
       country: country,
