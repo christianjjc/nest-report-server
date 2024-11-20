@@ -17,6 +17,11 @@ export const chartJsToImage = async (chartConfig: unknown, options: ChartOptions
   const chartUrl = `https://quickchart.io/chart?c=${encodedUri}&${params.toString()}`;
   const response = await axios.get(chartUrl, { responseType: 'arraybuffer' });
 
+  console.log('=================================================');
+  console.log('=================================================');
+  console.log('Response.data', response.data);
+  console.log('encodedUri', encodedUri);
+
   return `data:image/png;base64,${Buffer.from(response.data).toString('base64')}`;
 };
 

@@ -1,6 +1,6 @@
 import type { TDocumentDefinitions } from 'pdfmake/interfaces';
-import { generateDonutChart, generateLineChart } from './charts';
-import { headerSection } from './sections';
+import { generateBarsChart, generateDonutChart, generateLineChart /* generateMultiAxisLineChart */ } from './charts';
+import { footerSection, headerSection } from './sections';
 
 interface TopCountryI {
   country: string;
@@ -14,7 +14,13 @@ interface ReportOptionsI {
 }
 
 export const getStatisticsReport = async (options: ReportOptionsI) => {
-  const [donutChart, lineChart] = await Promise.all([
+  const [
+    //
+    donutChart,
+    lineChart,
+    barsChart,
+    // multiAxisLineChart,
+  ] = await Promise.all([
     generateDonutChart({
       entries: options.topCountries.map((c) => ({
         label: c.country,
@@ -23,6 +29,8 @@ export const getStatisticsReport = async (options: ReportOptionsI) => {
       position: 'left',
     }),
     generateLineChart(),
+    generateBarsChart(),
+    // generateMultiAxisLineChart(),
   ]);
 
   const docDefinition: TDocumentDefinitions = {
@@ -31,6 +39,7 @@ export const getStatisticsReport = async (options: ReportOptionsI) => {
       title: options.title ?? 'Estadísticas de Clientes',
       subTitle: options.subTitle ?? 'Top 10 países con más clientes',
     }),
+    footer: footerSection,
     content: [
       {
         columns: [
@@ -63,6 +72,20 @@ export const getStatisticsReport = async (options: ReportOptionsI) => {
         image: lineChart,
         width: 500,
         margin: [0, 20, 0, 0],
+      },
+      {
+        margin: [0, 20, 0, 0],
+        columnGap: 10,
+        columns: [
+          {
+            image: barsChart,
+            width: 250,
+          },
+          // {
+          //   image: multiAxisLineChart,
+          //   width: 250,
+          // },
+        ],
       },
     ],
   };
