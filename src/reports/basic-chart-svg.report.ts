@@ -9,16 +9,19 @@ const generateChartImage = async () => {
   const chartConfig = {
     type: 'bar', // Show a bar chart
     data: {
-      labels: [2012, 2013, 2014, 2015, 2016], // Set X-axis labels
+      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'], // Set X-axis labels
       datasets: [
         {
-          label: 'Users', // Create the 'Users' dataset
-          data: [120, 60, 50, 180, 120], // Add data to the chart
+          label: 'Mi Primer Gráfico', // Create the 'Users' dataset
+          data: [120, 60, 50, 180, 120, 250, 50], // Add data to the chart,
+          backgroundColor: 'rgba(93, 75, 192, 0.2)',
+          borderColor: 'rgba(81, 75, 192)',
+          borderWidth: 1,
         },
       ],
     },
   };
-  return Utils.chartJsTiImage(chartConfig);
+  return Utils.chartJsToImage(chartConfig /* , { height: 50, width: 50 } */);
 };
 
 export const getBasicChartSvgReport = async (): Promise<TDocumentDefinitions> => {
