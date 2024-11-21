@@ -39,4 +39,31 @@ export class ExtraReportsService {
     const doc = this.printerService.createPDF(docDefinition);
     return doc;
   }
+
+  getCustomSize() {
+    const doc = this.printerService.createPDF({
+      // pageSize: 'TABLOID',
+      // pageSize: 'A5',
+      // pageSize: 'EXECUTIVE',
+      // pageSize: 'LETTER',
+      pageSize: {
+        width: 150,
+        height: 300,
+      },
+      content: [
+        {
+          qr: 'https://cjjc.pe',
+          fit: 100,
+          alignment: 'center',
+        },
+        {
+          text: 'Reporte con tamaño personalizado',
+          fontSize: 10,
+          alignment: 'center',
+          margin: [0, 20],
+        },
+      ],
+    });
+    return doc;
+  }
 }
